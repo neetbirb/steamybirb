@@ -17,7 +17,7 @@ RUN dpkg --add-architecture i386 && \
 
 # Set local language encoding
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Download and install Steam
 RUN wget -O /tmp/steam.deb https://repo.steampowered.com/steam/archive/precise/steam_latest.deb && \
