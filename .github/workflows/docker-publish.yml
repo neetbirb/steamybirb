@@ -2,11 +2,16 @@ name: Build and Publish to GHCR
 
 on:
   push:
-    branches: [ "main" ] 
+    branches: [ "main" ]
 
 jobs:
   build-and-push-image:
-    runs-on: debian:bookworm-slim
+    runs-on: ubuntu-latest
+    
+    # Forces GitHub to use the updated Node.js backend to clear the warning
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      
     permissions:
       contents: read
       packages: write
@@ -23,8 +28,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        # Upgraded from v5 to v6
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/neetbirb/steamybirb:latest
+          # REMEMBER TO KEEP YOUR ACTUAL USERNAME HERE
+          tags: ghcr.io/YOUR_GITHUB_USERNAME/steam-debian:latest
