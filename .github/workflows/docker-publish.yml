@@ -34,4 +34,4 @@ jobs:
           context: .
           push: true
           # REMEMBER TO KEEP YOUR ACTUAL USERNAME HERE
-          tags: ghcr.io/YOUR_GITHUB_USERNAME/steam-debian:latest
+          tags: ghcr.io/neetbirb/steamybirb:latest
