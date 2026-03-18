@@ -2,13 +2,13 @@ FROM debian:bookworm-slim
 
 # Prevent interactive popups during apt installations
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Enable 32-bit architecture (Strictly required for Steam)
+# Enable 32-bit architecture and install core dependencies
+# Added xz-utils, make, and gcc for the NVIDIA installer payload
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
     wget curl ca-certificates xserver-xorg xinit openbox \
-    pulseaudio sudo pciutils kmod \
+    pulseaudio sudo pciutils kmod xz-utils make gcc \
     libgl1-mesa-dri libgl1-mesa-dri:i386 \
     libgl1-mesa-glx libgl1-mesa-glx:i386 \
     libc6:i386 locales && \
@@ -18,10 +18,11 @@ RUN dpkg --add-architecture i386 && \
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 
-# Download and install the exact NVIDIA driver matching the TrueNAS host
+# Download and install the NVIDIA driver
+# Added --no-x-check and a log-dump failsafe so we can see exact errors in GitHub Actions
 RUN wget https://us.download.nvidia.com/XFree86/Linux-x86_64/570.172.08/NVIDIA-Linux-x86_64-570.172.08.run -O /tmp/nvidia.run && \
     chmod +x /tmp/nvidia.run && \
-    /tmp/nvidia.run --silent --no-kernel-module --install-libglbind && \
+    /tmp/nvidia.run --silent --no-kernel-module --install-libglbind --no-x-check --no-nouveau-check || (cat /var/log/nvidia-installer.log && exit 1) && \
     rm /tmp/nvidia.run
 
 # Download and install Steam
